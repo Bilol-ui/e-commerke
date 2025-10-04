@@ -8,7 +8,7 @@ from django.utils.timezone import now
 
 class User(AbstractUser):
     username = None
-    email = EmailField(unique=True, null=True, blank=True)
+    email =  EmailField(unique=True, null=True, blank=True)
     phone = CharField(max_length=20, unique=True, null=True, blank=True)
     is_verified = BooleanField(default=False)
 
