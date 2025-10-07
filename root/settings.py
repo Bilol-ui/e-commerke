@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-wf((hn+p#98b(@-@3z895*%1q72+tz4c%g@q4f38^s(0gnmq=p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -29,6 +29,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps',
     'rest_framework',
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
+   "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -66,12 +69,12 @@ AUTH_USER_MODEL = 'apps.User'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_NAME'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_DB', 'drf_commerce'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '1'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'postgres_service'),  # Docker service nomi
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),  # Container ichidagi port
     }
 }
 
@@ -116,3 +119,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#DRF CONF
+
+REST_FRAMEWORK = {
+'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'E-Commerce',
+    'DESCRIPTION': 'Documentation for your project API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
