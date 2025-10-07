@@ -1,179 +1,24 @@
-Projectlar
+https://www.figma.com/design/Hda8bgGevRwr9ZsRA4zBi4/Full-E-Commerce-Website-UI-UX-Design-(Community)?node-id=1-3&p=f&t=ouabHbBn6BasTvk6-0
 
-0) medcard
-1. auth qismi (telegram, phone, via google [oneid])
-2. klinikalarni qoshish (adminkada)
-3. retsep yozish (narxini chiqarib beramiz tahminiy)
-4. pdf shaklida olish
-5. rollar (patient, doctor, med-owner)
-
-
-1) online booking
-1. service nomlari listi (xizmatlar royhatini chiqarish)
-2. joylar band qilish (nechta qolganini korib turish)
-3. adminkadan ozining vaqtlarini belgilab qoyish (misol sartarosh dushanba 8:00 dan 18:00 gacha)
-
-
-2) tour agency (ai orqali)
-1. tarixini saqlash
-2. chatgpt bilan integration rasm ham bolishi kerak
-3. tarixda suggest qilingan trip larni chiqarish
-4. davlatlarga ajratish
-5. subscribe qilish (telefon nomer orqali login qilish uzumdagidek,
-telegram orqali har shunaqa tema chiqsa yuboradi inline btn bilan)
-
-
-3) online pdp [django]
-https://videohub.uz/
-1. adminkada videolarni yuklash (har user uchun)
-    1.1 20Gb dan kichik bolishi
-
-2. adminkada API KEY kalitlar yaratish imkoniyati
-3. aiogram nomer orqali otish, 42.uz va botcommerce.io ga oxshash
-
-4. API orqali ishlatish
-mentorlar royhati bolishi (mentor rasmi, fio)
-tag bolishi ()
-
-course (name, short_description, full_description)
-
-
-
-domen
-server (termius)
 docker compose
+Makefile
+github cicd
+isort, flake8
+minio
 redis
-nginx
+postgres
 
+Task
+1. login, register
+- email|phone orqali login qilish
+- email|phone register qilishda,
+agar pochta kiritgan bolsa, pochtaga tasdiqlash linki
+agar phone kiritgan bolsa, sms yuborish kk (1minutda tasdiqlash kk)
+sms qayta yuborish bolsin (3martadan keyin malumotlarini delete qilish kk)
 
+1.1 edit profile apisi kerak (email yoki phone ozgartirganda tasdiqlash yuborilishi)
 
-------------------------------------
-project
-1. medcard [fastapi]
-Fayoz +
-Elyor
-Gulrux
-Abdulaziz
+2. product modeli
+- rasmlari bir hil size bolsin (barcha webp formatga otkazilsin)
+- productni size va color bolsin
 
-2. online-booking [drf]
-Azimbek +
-Abror
-Salimjon
-Jahongir
-Abduravshan
-
-3. tour agency [fastapi]
-Sarvarbek +
-Shahobiddin
-Azizjon
-Habibulloh
-
-4. online-pdp [drf]
-xolmomin +
-mirjalol
-
-https://videohub.uz/course-detail/spring-core/b62b723f-b3d6-4118-a768-40008096a1ce
-	{
-		"id": "c8ae335c-ab72-4b42-8461-9a6a86bc2d24",
-		"name": "About Course",
-		"order_number": 1,
-		"status": "PUBLISHED",
-		"type": "VIDEO_LINK",
-		"access_type": "PUBLIC",
-		"videoDuration": 164
-	},
-
-
-lesson id berilganda video link qaytadi
-https://api.videohab.uz/api/v1/course-lesson/public/c8ae335c-ab72-4b42-8461-9a6a86bc2d24
-{
-    "message": null,
-    "code": 200,
-    "isError": false,
-    "data": {
-        "id": "c8ae335c-ab72-4b42-8461-9a6a86bc2d24",
-        "name": "About Course",
-        "orderNumber": 1,
-        "status": "PUBLISHED",
-        "type": "VIDEO_LINK",
-        "accessType": "PUBLIC",
-        "videoDuration": 164,
-        "courseSectionId": "413c6bda-1c21-4fc0-9c01-d74cdef58487",
-        "content": "",
-        "videoId": "https://www.youtube.com/embed/SExRwYdSUYc?si=uO8ITIgvmhMhjeVG",
-        "createdDate": "2023-10-09T22:49:51.429986"
-    }
-}
-
-
-
-
-cd /etc/systemd/system/
-nano online_pdp.service
-
-[Unit]
-Description=Online pdp
-After=network.target
-
-[Service]
-WorkingDirectory=/var/www/online_pdp
-ExecStart=/var/www/online_pdp/.venv/bin/gunicorn --workers 3 --bind unix:/var/www/online_pdp/online_pdp.sock root.wsgi:application
-
-[Install]
-WantedBy=multi-user.target
-
-systemctl enable online_pdp.service
-systemctl start online_pdp.service
-systemctl status online_pdp.service
-
-
-cd /etc/nginx/sites-available/
-
-nano online_pdp
-
-server {
-    listen 8000;
-    server_name 143.198.81.242;
-    server_name online_pdp.fil.uz;
-
-    location /static/ {
-        alias /var/www/online_pdp/static/;
-        expires 30d; # Cache static files for 30 days
-    }
-
-    location /media/ {
-        alias /var/www/online_pdp/media/;
-        expires 30d; # Cache media files for 30 days
-    }
-
-    location / {
-        include proxy_params;
-        proxy_pass http://unix:/var/www/online_pdp/online_pdp.sock; # socket
-    }
-}
-
-ln -s /etc/nginx/sites-available/online_pdp /etc/nginx/sites-enabled/
-
-nginx -t
-systemctl restart nginx.service
-
-
-sudo certbot --nginx -d xolmomin.fil.uz
-
-
-
-
-
-
-
-
-
-TASK
-1. interviews fixturs yaratish (python dan 5ta, django 5ta, postgresql 5ta) +
-2. interview detailni frontini ozgartirish +
-3. https://davronbek.dev/blogs  (blogs)
-4. https://videohub.uz/
-ga oxshash front yasash AI orqali
-
-
-0707172aaf90ea48a849682835b63b51b1a93461bb2fcd72329737079ad9d609

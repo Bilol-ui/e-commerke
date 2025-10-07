@@ -48,7 +48,14 @@ class User(AbstractUser):
         return self.email or self.phone
 
 
-
+# class PhoneVerification(Model):
+#     user = OneToOneField(User, CASCADE)
+#     code = CharField(max_length=6)
+#     created_at = DateTimeField(auto_now_add=True)
+#     attempts = IntegerField(default=0)
+#
+#     def is_expired(self):
+#         return now() > self.created_at + timedelta(minutes=1)
 
 
 class SizeEnum(TextChoices):
@@ -70,16 +77,20 @@ class ColorEnum(TextChoices):
 class Product(Model):
     name = CharField(max_length=200)
     description = TextField(blank=True)
-    price = DecimalField(max_digits=10,decimal_places=2)
-    size = CharField(max_length=5,choices=SizeEnum, default=SizeEnum.M)
-    color = CharField(max_length=5,choices=ColorEnum,default=ColorEnum.Black)
+    price = DecimalField(max_digits=10, decimal_places=2)
+    size = CharField(max_length=5, choices=SizeEnum, default=SizeEnum.M)
+    color = CharField(max_length=5, choices=ColorEnum, default=ColorEnum.Black)
 
     def __str__(self):
         return self.name
 
+
 class ProductImage(Model):
-    product = ForeignKey(Product,CASCADE,related_name='images')
+    product = ForeignKey(Product, CASCADE, related_name='images')
     image = ImageField(upload_to='products/')
 
     def __str__(self):
         return f"{self.product.name} - Image"
+
+# TODO product keyboard(color), monitor(rang), samsung a56(CPU, RAM, color), jacket(size, color), PS5(color, RAM, CPU)
+# TODO redis {'phone': 'code'}  {'email': 'code'}

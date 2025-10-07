@@ -40,28 +40,31 @@ class RegisterSerializer(ModelSerializer):
 
         return clean_phone
 
+
 class ProductImageSerializer(ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = ['id','image']
+        fields = ['id', 'image']
 
-    def create(self,validated_data):
+    def create(self, validated_data):
         instance = super().create(validated_data)
 
         if instance.image:
             img_path = instance.image.path
             img = Image.open(img_path)
 
-            img = img.resize(600,600)
+            img = img.resize(600, 600)
             webp_path = os.path.splitext(img_path([0]))
-            img.save(webp_path,"WEBP")
+            img.save(webp_path, "WEBP")
 
             instance.image.name = "products/" + os.path.basename(webp_path)
             instance.save(update_fields=["image"])
         return instance
 
+
 class ProductSerializer(ModelSerializer):
-    images = ProductImageSerializer(many=True,read_only=True)
+    images = ProductImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
         fields = ["id", "name", "description", "price", "size", "color", "images"]
