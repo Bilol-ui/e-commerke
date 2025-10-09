@@ -1,5 +1,7 @@
+import os
 from datetime import timedelta
 
+from PIL import Image
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
@@ -48,46 +50,62 @@ class User(AbstractUser):
         return self.email or self.phone
 
 
-# class PhoneVerification(Model):
-#     user = OneToOneField(User, CASCADE)
-#     code = CharField(max_length=6)
-#     created_at = DateTimeField(auto_now_add=True)
-#     attempts = IntegerField(default=0)
-#
-#     def is_expired(self):
-#         return now() > self.created_at + timedelta(minutes=1)
 
-
-class SizeEnum(TextChoices):
-    XS = "XS", "EXTRA SMALL"
-    S = "s", "SMALL"
-    M = "M", "Medium"
-    L = "L", "Large"
-    XL = "XL", "Extra Large"
-
-
-class ColorEnum(TextChoices):
-    Black = "black", "Black"
-    WHITE = "white", "White"
-    RED = "red", "Red"
-    BLUE = "blue", 'Blue'
-    GREEN = "green", "Green"
 
 
 class Product(Model):
+    class ColorEnum(TextChoices):
+        BLACK = "black", "Black"
+        WHITE = "white", "White"
+        RED = "red", "Red"
+        BLUE = "blue", "Blue"
+        GREEN = "green", "Green"
+
+    class SizeEnum(TextChoices):
+        SMALL = "small", "Small"
+        MEDIUM = "medium", "Medium"
+        LARGE = "large", "Large"
+        XLARGE = "xlarge", "Extra Large"
+        NONE = "none", "No Size"
+
     name = CharField(max_length=200)
     description = TextField(blank=True)
     price = DecimalField(max_digits=10, decimal_places=2)
+
     size = CharField(max_length=5, choices=SizeEnum, default=SizeEnum.M)
     color = CharField(max_length=5, choices=ColorEnum, default=ColorEnum.Black)
 
     def __str__(self):
         return self.name
 
+    size = CharField(max_length=10, choices=SizeEnum.choices, default=SizeEnum.NONE)
+    color =CharField(max_length=10, choices=ColorEnum.choices, default=ColorEnum.BLACK)
+
+
 
 class ProductImage(Model):
+
     product = ForeignKey(Product, CASCADE, related_name='images')
     image = ImageField(upload_to='products/')
+
+    product = ForeignKey(Product, on_delete=CASCADE, related_name="images")
+    image = ImageField(upload_to="products/")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        if self.image:
+            img_path = self.image.path
+            img = Image.open(img_path)
+
+            img = img.resize((500, 500))
+
+            webp_path = os.path.splitext(img_path)[0] + ".webp"
+            img.save(webp_path, "WEBP")
+
+            self.image.name = "products/" + os.path.basename(webp_path)
+            super().save(update_fields=["image"])
+
 
     def __str__(self):
         return f"{self.product.name} - Image"
