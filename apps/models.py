@@ -1,15 +1,13 @@
 import os
-from datetime import timedelta
 
 from PIL import Image
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.db.models import EmailField, CharField, BooleanField, Model, OneToOneField, CASCADE, DateTimeField, \
-    IntegerField, ForeignKey, ImageField
+from django.contrib.auth.models import AbstractUser
+from django.db.models import EmailField, CharField, BooleanField, Model, CASCADE, DateTimeField, \
+    ForeignKey, ImageField
 from django.db.models.enums import TextChoices
 from django.db.models.fields import TextField, DecimalField
-from django.utils.timezone import now
 
 
 class CustomUserManager(BaseUserManager):
@@ -68,18 +66,28 @@ class Product(Model):
         XLARGE = "xlarge", "Extra Large"
         NONE = "none", "No Size"
 
-    name = CharField(max_length=200)
+    name = CharField(max_length=255)
     description = TextField(blank=True)
     price = DecimalField(max_digits=10, decimal_places=2)
 
-    size = CharField(max_length=5, choices=SizeEnum, default=SizeEnum.M)
-    color = CharField(max_length=5, choices=ColorEnum, default=ColorEnum.Black)
+    # Qo‘shimcha atributlar (hammasi optional)
+    size = CharField(
+        max_length=20,
+        choices=SizeEnum.choices,
+        default=SizeEnum.NONE,
+    )
+    color = CharField(
+        max_length=20,
+        choices=ColorEnum.choices,
+        default=ColorEnum.NONE,
+    )
+    ram = CharField(max_length=50, blank=True, null=True)
+    cpu = CharField(max_length=50, blank=True, null=True)
 
-    def __str__(self):
-        return self.name
+    # Rasm
+    image = ImageField(upload_to="products/")
 
-    size = CharField(max_length=10, choices=SizeEnum.choices, default=SizeEnum.NONE)
-    color =CharField(max_length=10, choices=ColorEnum.choices, default=ColorEnum.BLACK)
+    created_at = DateTimeField(auto_now_add=True)
 
 
 

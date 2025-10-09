@@ -3,7 +3,7 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from apps.models import User, Product, ProductImage
-from apps.serializers import RegisterSerializer, ProductSerializer, ProductImageSerializer
+from apps.serializers import RegisterSerializer, ProductSerializer, ProductImageSerializer, ProductModelSerializer
 
 
 # Create your views here.
@@ -15,7 +15,7 @@ class RegistrationCreateAPIView(CreateAPIView):
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductModelSerializer
 
 
 class ProductImageViewSet(ModelViewSet):
