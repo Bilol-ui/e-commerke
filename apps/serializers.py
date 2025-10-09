@@ -32,9 +32,7 @@ class RegisterSerializer(ModelSerializer):
             if User.objects.filter(email=email).exists():
                 raise ValidationError("Bu email allaqachon ro‘yxatdan o‘tgan.")
 
-<<<<<<< HEAD
 
-=======
         if phone:
             if not phone.startswith("+998"):
                 raise ValidationError("phone number +998 bilan boshlanshi kerak")
@@ -43,13 +41,11 @@ class RegisterSerializer(ModelSerializer):
                 raise ValidationError("Telefon raqam uzunligi 12 ta raqam bo‘lishi kerak.")
             if User.objects.filter(phone=phone).exists():
                 raise ValidationError("Bu phone allaqachon ro‘yxatdan o‘tgan.")
->>>>>>> c382de8 (new add)
 class ProductImageSerializer(ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ['id', 'image']
 
-<<<<<<< HEAD
     def create(self, validated_data):
         instance = super().create(validated_data)
 
@@ -64,9 +60,7 @@ class ProductImageSerializer(ModelSerializer):
             instance.image.name = "products/" + os.path.basename(webp_path)
             instance.save(update_fields=["image"])
         return instance
-=======
 
->>>>>>> c382de8 (new add)
 
 
 class ProductSerializer(ModelSerializer):
