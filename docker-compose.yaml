@@ -13,7 +13,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=1
       - POSTGRES_DB=drf_commerce      # ❗ baza nomi qo‘shildi
-      - POSTGRES_USER=postgres        # ❗ foydalanuvchi nomi kiritildi
     ports:
       - "5432:5432"
     volumes:

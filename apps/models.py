@@ -48,9 +48,6 @@ class User(AbstractUser):
         return self.email or self.phone
 
 
-
-
-
 class Product(Model):
     class ColorEnum(TextChoices):
         BLACK = "black", "Black"
@@ -90,14 +87,9 @@ class Product(Model):
     created_at = DateTimeField(auto_now_add=True)
 
 
-
 class ProductImage(Model):
-
     product = ForeignKey(Product, CASCADE, related_name='images')
     image = ImageField(upload_to='products/')
-
-    product = ForeignKey(Product, on_delete=CASCADE, related_name="images")
-    image = ImageField(upload_to="products/")
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -113,7 +105,6 @@ class ProductImage(Model):
 
             self.image.name = "products/" + os.path.basename(webp_path)
             super().save(update_fields=["image"])
-
 
     def __str__(self):
         return f"{self.product.name} - Image"

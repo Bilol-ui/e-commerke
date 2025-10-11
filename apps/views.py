@@ -6,7 +6,6 @@ from apps.models import User, Product, ProductImage
 from apps.serializers import RegisterSerializer, ProductSerializer, ProductImageSerializer, ProductModelSerializer
 
 
-# Create your views here.
 
 
 class RegistrationCreateAPIView(CreateAPIView):
