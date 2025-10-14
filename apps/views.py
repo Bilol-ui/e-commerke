@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.generics import CreateAPIView
 from rest_framework.viewsets import ModelViewSet
 
-from apps.models import User, Product, ProductImage
+from apps.models import User, ProductImage, Product
 from apps.serializers import RegisterSerializer, ProductSerializer, ProductImageSerializer, ProductModelSerializer
 
 
