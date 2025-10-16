@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from apps.models import ProductImage, Product
+from apps.models.products import Category
 
 User = get_user_model()
 
@@ -42,42 +43,21 @@ class RegisterSerializer(ModelSerializer):
         return attrs
 
 
-class ProductImageSerializer(ModelSerializer):
+class CategoryModelSerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
+
+
+class ProductImageModelSerializer(ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ['id', 'image']
 
-    def create(self, validated_data):
-        instance = super().create(validated_data)
-
-        # ✅ Rasmni WEBP formatga o‘tkazish
-        if instance.image:
-            img_path = instance.image.path
-            img = Image.open(img_path)
-            img = img.resize((600, 600))
-            webp_path = os.path.splitext(img_path)[0] + ".webp"
-            img.save(webp_path, "WEBP")
-
-            instance.image.name = "products/" + os.path.basename(webp_path)
-            instance.save(update_fields=["image"])
-
-        return instance
-
 
 class ProductModelSerializer(ModelSerializer):
-    images = ProductImageSerializer(many=True, read_only=True)
+    category = CategoryModelSerializer(read_only=True)
 
     class Meta:
         model = Product
-        fields = [
-            "id",
-            "name",
-            "description",
-            "price",
-            "size",
-            "color",
-            "ram",
-            "cpu",
-            "images",
-            "created_at",
-        ]
+        fields = "__all__"
