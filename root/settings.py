@@ -1,24 +1,21 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+from dotenv import load_dotenv
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+if not os.path.exists('/.dockerenv'):
+    load_dotenv('env/.env.local')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-wf((hn+p#98b(@-@3z895*%1q72+tz4c%g@q4f38^s(0gnmq=p'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-#SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-demo")
+# DEBUG = True
+# SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-demo")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = ["*"]
 
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -32,9 +29,10 @@ INSTALLED_APPS = [
     'apps',
     'rest_framework',
     "drf_spectacular",
-    "drf_spectacular_sidecar",
+
     "rest_framework_simplejwt",
     'django_filters',
+    'mptt',
 ]
 
 MIDDLEWARE = [
@@ -74,21 +72,28 @@ AUTH_USER_MODEL = 'apps.User'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_DB', 'drf_commerce'),
-        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', '1'),
-        'HOST': os.environ.get('POSTGRES_HOST', 'postgres_service'),  # Docker service nomi
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),  # Container ichidagi port
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT')
     }
 }
 
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
+
 CACHES = {
     "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
     }
 }
 
@@ -143,8 +148,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en'
 LANGUAGES = [
-    ('en','English'),
-    ('uz','Uzbek')
+    ('en', 'English'),
+    ('uz', 'Uzbek')
 ]
 TIME_ZONE = 'UTC'
 
@@ -165,21 +170,20 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#DRF CONF
+# DRF CONF
 
 REST_FRAMEWORK = {
-'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     'DEFAULT_FILTER_BACKENDS': [
-            'django_filters.rest_framework.DjangoFilterBackend',
-            'rest_framework.filters.SearchFilter',
-            'rest_framework.filters.OrderingFilter',
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
     ]
 }
-
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'E-Commerce',

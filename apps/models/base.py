@@ -8,3 +8,4 @@ class BaseModel(Model):
     class Meta:
         abstract = True  # bu model migration bo‘lmaydi
 
+# uuidbasemodel

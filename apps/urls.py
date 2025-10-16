@@ -8,8 +8,8 @@ from apps.views import (
 )
 
 router = DefaultRouter()
-router.register("categories", CategoryModelViewSet.as_view(), basename="category")
-router.register("products",ProductModelViewSet.as_view() , basename="product")
+router.register("categories", CategoryModelViewSet, basename="category")
+router.register("products", ProductModelViewSet, basename="product")
 router.register("product-images", ProductImageModelViewSet, basename="product-image")
 
 urlpatterns = [
