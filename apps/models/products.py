@@ -4,7 +4,7 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db.models import CharField, TextField, ForeignKey, CASCADE, DecimalField, ImageField, PositiveIntegerField, \
-    JSONField, BooleanField, SET_NULL
+    JSONField, BooleanField
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -13,8 +13,7 @@ from apps.models.base import CreatedBaseModel
 
 class Category(MPTTModel):
     name = CharField(max_length=255, unique=True)
-    # TODO icon
-    parent = TreeForeignKey('self', SET_NULL, null=True, blank=True, related_name='subcategories')
+    parent = TreeForeignKey('self', CASCADE, null=True, blank=True, related_name='subcategories')
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -26,24 +25,17 @@ class Category(MPTTModel):
 class Product(CreatedBaseModel):
     name = CharField(max_length=255)
     category = ForeignKey('apps.Category', CASCADE, related_name='products')
-    description = TextField(blank=True, null=True)  # TODO ckeditor5
-    # price = DecimalField(max_digits=10, decimal_places=2)
-    # quantity = PositiveIntegerField(default=0)
-    # attributes = JSONField(default=dict, blank=True)
-
-
-"""
-50-talik isitgich (0)
-30-talik isitgich (0)
-100-talik isitgich (17)
-
-"""
+    price = DecimalField(max_digits=10, decimal_places=2)
+    description = TextField(blank=True, null=True)
+    image = ImageField(upload_to="products/", blank=True, null=True)
+    stock = PositiveIntegerField(default=0)
+    attributes = JSONField(default=dict, blank=True)
 
 
 class ProductImage(CreatedBaseModel):
-    product = ForeignKey('apps.Product', CASCADE, related_name="images")
+    product = ForeignKey('apps.Product', CASCADE, related_name="product_images")
     image = ImageField(upload_to='products/')
-    is_main = BooleanField(db_default=False, help_text='Asosiy rasmmi?')
+    is_main = BooleanField(default=False, help_text='Asosiy rasmmi?')
 
     def save(self, *args, **kwargs):
         if self.image:
