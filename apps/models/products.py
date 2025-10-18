@@ -32,6 +32,7 @@ class Product(CreatedBaseModel):
     attributes = JSONField(default=dict, blank=True)
 
 
+
 class ProductImage(CreatedBaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name="product_images")
     image = ImageField(upload_to='products/')
