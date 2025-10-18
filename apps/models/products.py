@@ -27,9 +27,17 @@ class Product(CreatedBaseModel):
     category = ForeignKey('apps.Category', CASCADE, related_name='products')
     price = DecimalField(max_digits=10, decimal_places=2)
     description = TextField(blank=True, null=True)
-    image = ImageField(upload_to="products/", blank=True, null=True)
-    stock = PositiveIntegerField(default=0)
-    attributes = JSONField(default=dict, blank=True)
+    # image = ImageField(upload_to="products/", blank=True, null=True)
+    # stock = PositiveIntegerField(default=0)
+    # attributes = JSONField(default=dict, blank=True)
+
+
+"""
+50-talik isitgich (0)
+30-talik isitgich (0)
+100-talik isitgich (17)
+
+"""
 
 
 class ProductImage(CreatedBaseModel):
