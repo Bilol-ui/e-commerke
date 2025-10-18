@@ -32,9 +32,9 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    email = EmailField(unique=True,null=True,blank=True)
-    phone = CharField(max_length=20,unique=True,null=True,blank=True)
-    is_verified = BooleanField(default=False)
+    email = EmailField(unique=True, null=True, blank=True)
+    phone = CharField(max_length=20, unique=True, null=True, blank=True)
+    is_verified = BooleanField(db_default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
