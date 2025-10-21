@@ -1,12 +1,16 @@
 from django.contrib import admin
-from mptt.admin import MPTTModelAdmin, DraggableMPTTAdmin
+from django.contrib.admin import ModelAdmin, TabularInline
+from mptt.admin import MPTTModelAdmin
 
-from apps.models import Category
+from .models import Category, Product, ProductImage, ProductVariant
 
 
 @admin.register(Category)
-class CategoryAdmin(DraggableMPTTAdmin):
-    pass
+class CategoryAdmin(MPTTModelAdmin):
+    list_display = ("name", "parent", "slug", "icon")
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ("name",)
+    mptt_level_indent = 20
 
 # class UserAdmin(BaseUserAdmin):
 #     def get_form(self, request, obj=None, **kwargs):
@@ -32,3 +36,67 @@ class CategoryAdmin(DraggableMPTTAdmin):
 #             "fields": ("email", "phone", "password1", "password2", "is_staff", "is_superuser"),
 #         }),
 #     )
+
+
+
+@admin.register(Category)
+class CategoryAdmin(MPTTModelAdmin):
+
+    list_display = ("id", "name", "parent", "slug")
+    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ("name",)
+    list_filter = ("parent",)
+    ordering = ("name",)
+    mptt_level_indent = 20
+    list_display_links = ("id", "name")
+
+
+class ProductImageInline(TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ("image", "is_main")
+    readonly_fields = ()
+
+class ProductVariantInline(TabularInline):
+    model = ProductVariant
+    extra = 1
+    fields = (
+        "color",
+        "size",
+        "ram",
+        "storage",
+        "diagonal",
+        "material",
+        "price",
+        "stock",
+        "is_available",
+    )
+    readonly_fields = ("is_available",)
+
+
+@admin.register(Product)
+class ProductAdmin(ModelAdmin):
+
+    list_display = ("id", "name", "category", "price", "slug")
+    search_fields = ("name", "description")
+    list_filter = ("category",)
+    prepopulated_fields = {"slug": ("name",)}
+    ordering = ("-id",)
+    inlines = [ProductImageInline, ProductVariantInline]
+    list_display_links = ("id", "name")
+    save_on_top = True
+
+@admin.register(ProductImage)
+class ProductImageAdmin(ModelAdmin):
+    list_display = ("id", "product", "is_main")
+    list_filter = ("is_main", "product")
+    search_fields = ("product__name",)
+    ordering = ("-id",)
+
+
+@admin.register(ProductVariant)
+class ProductVariantAdmin(ModelAdmin):
+    list_display = ("id", "product", "color", "size", "ram", "storage", "price", "stock", "is_available")
+    list_filter = ("is_available", "color", "size")
+    search_fields = ("product__name", "color", "size", "ram", "storage")
+    ordering = ("-id",)

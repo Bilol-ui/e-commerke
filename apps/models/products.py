@@ -4,7 +4,8 @@ from io import BytesIO
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.db.models import CharField, TextField, ForeignKey, CASCADE, DecimalField, ImageField, PositiveIntegerField, \
-    JSONField, BooleanField
+    BooleanField, SlugField
+from django.utils.text import slugify
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -14,6 +15,16 @@ from apps.models.base import CreatedBaseModel
 class Category(MPTTModel):
     name = CharField(max_length=255, unique=True)
     parent = TreeForeignKey('self', CASCADE, null=True, blank=True, related_name='subcategories')
+    icon = CharField(blank=True, null=True)
+    slug = SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -22,14 +33,51 @@ class Category(MPTTModel):
         return self.name
 
 
-class Product(CreatedBaseModel):
+class Product(MPTTModel):
     name = CharField(max_length=255)
     category = ForeignKey('apps.Category', CASCADE, related_name='products')
     price = DecimalField(max_digits=10, decimal_places=2)
     description = TextField(blank=True, null=True)
-    # image = ImageField(upload_to="products/", blank=True, null=True)
-    # stock = PositiveIntegerField(default=0)
-    # attributes = JSONField(default=dict, blank=True)
+    slug = SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class ProductImage(MPTTModel):
+    product = ForeignKey(Product, CASCADE, related_name='images')
+    image = ImageField(upload_to='products/')
+    is_main = BooleanField(default=False, help_text="Asosiy rasm")
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
+
+
+class ProductVariant(MPTTModel):
+    product = ForeignKey('apps.Product', CASCADE, related_name='variants')
+    color = CharField(max_length=50, blank=True, null=True)  # Rang
+    size = CharField(max_length=50, blank=True, null=True)  # O‘lcham (S, M, L yoki 50 litr)
+    ram = CharField(max_length=50, blank=True, null=True)  # Telefonlar uchun
+    storage = CharField(max_length=50, blank=True, null=True)  # 128GB, 1TB
+    diagonal = CharField(max_length=50, blank=True, null=True)  # TV uchun
+    material = CharField(max_length=100, blank=True, null=True)
+    price = DecimalField(max_digits=10, decimal_places=2)
+    stock = PositiveIntegerField(default=0)
+    is_available = BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        self.is_available = self.stock > 0
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        attrs = [self.size, self.color, self.ram, self.storage, self.diagonal]
+        attr_str = " ".join(filter(None, attrs))
+        return f"{self.product.name} ({attr_str.strip() or 'Variant'})"
 
 
 """
@@ -40,8 +88,7 @@ class Product(CreatedBaseModel):
 """
 
 
-
-class ProductImage(CreatedBaseModel):
+class ProductImages(CreatedBaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name="product_images")
     image = ImageField(upload_to='products/')
     is_main = BooleanField(default=False, help_text='Asosiy rasmmi?')

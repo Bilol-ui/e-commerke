@@ -1,18 +1,23 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from apps.views import (
+from django.urls import path
+from .views import (
     RegistrationCreateAPIView,
-    CategoryModelViewSet,
-    ProductModelViewSet,
-    ProductImageModelViewSet,
+    CategoryListAPIViewSet,
+    CategoryDetailAPIView,
+    ProductListAPIViewSet,
+    ProductDetailAPIView,
+    ProductImageListCreateAPIView,
 )
-
-router = DefaultRouter()
-router.register("categories", CategoryModelViewSet, basename="category")
-router.register("products", ProductModelViewSet, basename="product")
-router.register("product-images", ProductImageModelViewSet, basename="product-image")
 
 urlpatterns = [
     path("register/", RegistrationCreateAPIView.as_view(), name="register"),
-    path("", include(router.urls)),
+
+    path("categories/", CategoryListAPIViewSet.as_view(), name="category-list"),
+
+    path("categories/<slug:slug>/", CategoryDetailAPIView.as_view(), name="category-detail"),
+
+    path("products/", ProductListAPIViewSet.as_view(), name="product-list"),
+
+    path("products/<slug:slug>/", ProductDetailAPIView.as_view(), name="product-detail"),
+
+    path("product-images/", ProductImageListCreateAPIView.as_view(), name="product-image-list-create"),
 ]

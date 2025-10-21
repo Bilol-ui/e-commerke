@@ -61,3 +61,35 @@ class ProductModelSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
+
+
+from rest_framework import serializers
+from apps.models import ProductVariant
+
+
+class ProductVariantSerializer(serializers.ModelSerializer):
+    """
+    ProductVariant modelini API orqali ko‘rish va yaratish uchun serializer.
+    Har bir variant — mahsulotning rang, o‘lcham, RAM, va boshqa xususiyatlarini o‘z ichiga oladi.
+    """
+
+    # product nomini o‘qish uchun (faqat ko‘rinish, o‘zgartirib bo‘lmaydi)
+    product_name = serializers.CharField(source='product.name', read_only=True)
+
+    class Meta:
+        model = ProductVariant
+        fields = [
+            "id",
+            "product",
+            "product_name",
+            "color",
+            "size",
+            "ram",
+            "storage",
+            "diagonal",
+            "material",
+            "price",
+            "stock",
+            "is_available",
+        ]
+        read_only_fields = ["is_available"]
