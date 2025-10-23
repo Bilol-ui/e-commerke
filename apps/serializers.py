@@ -1,11 +1,12 @@
-import os
 import re
-from PIL import Image
+
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
+from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
+
 from apps.models import ProductImage, Product
-from apps.models.products import Category
+from apps.models.products import Category, ProductVariant
 
 User = get_user_model()
 
@@ -63,18 +64,14 @@ class ProductModelSerializer(ModelSerializer):
         fields = "__all__"
 
 
-from rest_framework import serializers
-from apps.models import ProductVariant
 
 
-class ProductVariantSerializer(serializers.ModelSerializer):
-    """
-    ProductVariant modelini API orqali ko‘rish va yaratish uchun serializer.
-    Har bir variant — mahsulotning rang, o‘lcham, RAM, va boshqa xususiyatlarini o‘z ichiga oladi.
-    """
+
+class ProductVariantModelSerializer(ModelSerializer):
+
 
     # product nomini o‘qish uchun (faqat ko‘rinish, o‘zgartirib bo‘lmaydi)
-    product_name = serializers.CharField(source='product.name', read_only=True)
+    product_name = CharField(source='product.name', read_only=True)
 
     class Meta:
         model = ProductVariant

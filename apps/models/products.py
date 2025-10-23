@@ -80,12 +80,7 @@ class ProductVariant(MPTTModel):
         return f"{self.product.name} ({attr_str.strip() or 'Variant'})"
 
 
-"""
-50-talik isitgich (0)
-30-talik isitgich (0)
-100-talik isitgich (17)
 
-"""
 
 
 class ProductImages(CreatedBaseModel):

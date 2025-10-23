@@ -1,75 +1,56 @@
-from django.shortcuts import render
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, RetrieveUpdateDestroyAPIView, \
-    ListCreateAPIView
-from rest_framework.viewsets import ModelViewSet
 
-from apps.filters import ProductFilter
-from apps.models import User, ProductImage, Product
-from apps.models.products import Category
-from apps.serializers import RegisterSerializer, CategoryModelSerializer, ProductModelSerializer, \
-    ProductImageModelSerializer
+from apps.models import Category, Product, ProductVariant, ProductImages
+from apps.serializers import (
+    CategoryModelSerializer,
+    ProductModelSerializer,
+    ProductVariantModelSerializer,
+    ProductImageModelSerializer,
+)
 
-
-# Create your views here.
-
-
-class RegistrationCreateAPIView(CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-
-
-class CategoryListAPIViewSet(ListAPIView):
+class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryModelSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["name", "slug"]
 
-
-class CategoryDetailAPIView(RetrieveAPIView):
+class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryModelSerializer
     lookup_field = "slug"
 
-
-class ProductListAPIViewSet(ListAPIView):
-    queryset = Product.objects.all()
+class ProductListCreateAPIView(ListCreateAPIView):
+    queryset = Product.objects.all().select_related("category")
     serializer_class = ProductModelSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_class = ProductFilter
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "description"]
-    ordering_fields = ["price", "created_at"]
-
+    ordering_fields = ["price", "name"]
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all().prefetch_related("images", "variants")
+    queryset = Product.objects.all().select_related("category")
     serializer_class = ProductModelSerializer
     lookup_field = "slug"
 
-
-class ProductImageListCreateAPIView(ListCreateAPIView):
-    queryset = ProductImage.objects.all()
-    serializer_class = ProductImageModelSerializer
-
-
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from apps.models import ProductVariant
-from apps.serializers import ProductVariantSerializer
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
-
-
 class ProductVariantListCreateAPIView(ListCreateAPIView):
-    queryset = ProductVariant.objects.select_related("product").all()
-    serializer_class = ProductVariantSerializer
-
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["product", "color", "size", "ram", "storage", "is_available"]
-    search_fields = ["product__name", "color", "size", "ram", "storage"]
-    ordering_fields = ["price", "stock"]
-    ordering = ["-id"]
-
+    queryset = ProductVariant.objects.all().select_related("product")
+    serializer_class = ProductVariantModelSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["product__slug", "color", "size", "ram", "storage", "is_available"]
+    search_fields = ["product__name"]
 
 class ProductVariantDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = ProductVariant.objects.select_related("product").all()
-    serializer_class = ProductVariantSerializer
-    lookup_field = "id"
+    queryset = ProductVariant.objects.all().select_related("product")
+    serializer_class = ProductVariantModelSerializer
+
+class ProductImagesListCreateAPIView(ListCreateAPIView):
+    queryset = ProductImages.objects.all().select_related("product")
+    serializer_class = ProductImageModelSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["product__slug", "is_main"]
+    search_fields = ["product__name"]
+
+class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = ProductImages.objects.all().select_related("product")
+    serializer_class = ProductImageModelSerializer
