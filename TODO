@@ -1,12 +1,5 @@
 https://www.figma.com/design/Hda8bgGevRwr9ZsRA4zBi4/Full-E-Commerce-Website-UI-UX-Design-(Community)?node-id=1-3&p=f&t=ouabHbBn6BasTvk6-0
 
-docker compose
-Makefile
-github cicd
-isort, flake8
-minio
-redis
-postgres
 
 Task
 1. login, register
@@ -27,21 +20,23 @@ sms qayta yuborish bolsin (3martadan keyin malumotlarini delete qilish kk)
 TASK
 1. django jazzmin
 2. user (admin, user) ?
-3. django adminkadan username/email boyicha kirish
+3. django adminkadan phone/email boyicha kirish
 4.
+{
+  "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2MTQ1MjI0NiwiaWF0IjoxNzYxMzY1ODQ2LCJqdGkiOiI4N2NhZDQxZmQ5ZTk0NzkwYjE0NDJjN2Q3ODhiNzZmNyIsInVzZXJfaWQiOiIxIn0.SmDN9hhTOlbQp7CFJF11401EHd7BT66LkCDORTyG5B0",
+  "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYxMzY2MTQ2LCJpYXQiOjE3NjEzNjU4NDYsImp0aSI6IjA3MDQ3MzQ3MGY3OTRjMWI4OTAyYThmNzE3NWUxODZmIiwidXNlcl9pZCI6IjEifQ.NN3G8iRmEyLbYuH_yz-EgVJTYwwp3cbCFZ_Ynez5CyQ"
+  "data": {
+      "id": 2,
+      ...
+  }
+}
 
-fastapi, aiogram, flask, django(50 %)
-
-linked list, string, array
-
-O(n * n)
-O(1)
-index (btree)
-
-DSA - Data Structure and Algorithm
-design, stack, queue, hash table, binary tree, tree, graph
-
-system design
+5. category va product listida qulfchani olib tashash swaggerdan
+6. user, admin, moderator
+    - user faqat kora oladi
+    - admin, moderator crud amalini bajara oladi
 
 
-
+7. isort, flake8
+8. fixture qoshish (barcha modelga)
+9. list larga pagination qoshish (page, size)

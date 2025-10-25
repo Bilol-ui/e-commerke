@@ -1,2 +1,2 @@
 from apps.models.users import User
-from apps.models.products import Product, ProductImage, Category,ProductVariant
+from apps.models.products import Product, ProductImage, Category,ProductVariant, ProductImages

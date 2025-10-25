@@ -13,10 +13,10 @@ from apps.models.base import CreatedBaseModel
 
 
 class Category(MPTTModel):
-    name = CharField(max_length=255, unique=True)
+    name = CharField(max_length=255)
     parent = TreeForeignKey('self', CASCADE, null=True, blank=True, related_name='subcategories')
     icon = CharField(blank=True, null=True)
-    slug = SlugField(unique=True, blank=True)
+    slug = SlugField(unique=True, editable=False)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -29,16 +29,13 @@ class Category(MPTTModel):
     class MPTTMeta:
         order_insertion_by = ['name']
 
-    def __str__(self):
-        return self.name
-
 
 class Product(MPTTModel):
     name = CharField(max_length=255)
     category = ForeignKey('apps.Category', CASCADE, related_name='products')
     price = DecimalField(max_digits=10, decimal_places=2)
     description = TextField(blank=True, null=True)
-    slug = SlugField(unique=True, blank=True)
+    slug = SlugField(unique=True, editable=False)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -50,7 +47,7 @@ class Product(MPTTModel):
 
 
 class ProductImage(MPTTModel):
-    product = ForeignKey(Product, CASCADE, related_name='images')
+    product = ForeignKey('apps.Product', CASCADE, related_name='images')
     image = ImageField(upload_to='products/')
     is_main = BooleanField(default=False, help_text="Asosiy rasm")
 
@@ -78,9 +75,6 @@ class ProductVariant(MPTTModel):
         attrs = [self.size, self.color, self.ram, self.storage, self.diagonal]
         attr_str = " ".join(filter(None, attrs))
         return f"{self.product.name} ({attr_str.strip() or 'Variant'})"
-
-
-
 
 
 class ProductImages(CreatedBaseModel):

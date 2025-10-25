@@ -2,15 +2,8 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline
 from mptt.admin import MPTTModelAdmin
 
-from .models import Category, Product, ProductImage, ProductVariant
+from apps.models import Category, Product, ProductImage, ProductVariant
 
-
-@admin.register(Category)
-class CategoryAdmin(MPTTModelAdmin):
-    list_display = ("name", "parent", "slug", "icon")
-    prepopulated_fields = {"slug": ("name",)}
-    ordering = ("name",)
-    mptt_level_indent = 20
 
 # class UserAdmin(BaseUserAdmin):
 #     def get_form(self, request, obj=None, **kwargs):
@@ -38,10 +31,8 @@ class CategoryAdmin(MPTTModelAdmin):
 #     )
 
 
-
 @admin.register(Category)
 class CategoryAdmin(MPTTModelAdmin):
-
     list_display = ("id", "name", "parent", "slug")
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ("name",)
@@ -56,6 +47,7 @@ class ProductImageInline(TabularInline):
     extra = 1
     fields = ("image", "is_main")
     readonly_fields = ()
+
 
 class ProductVariantInline(TabularInline):
     model = ProductVariant
@@ -76,7 +68,6 @@ class ProductVariantInline(TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
-
     list_display = ("id", "name", "category", "price", "slug")
     search_fields = ("name", "description")
     list_filter = ("category",)
@@ -85,6 +76,7 @@ class ProductAdmin(ModelAdmin):
     inlines = [ProductImageInline, ProductVariantInline]
     list_display_links = ("id", "name")
     save_on_top = True
+
 
 @admin.register(ProductImage)
 class ProductImageAdmin(ModelAdmin):

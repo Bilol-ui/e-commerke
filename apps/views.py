@@ -10,16 +10,19 @@ from apps.serializers import (
     ProductImageModelSerializer,
 )
 
+
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryModelSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "slug"]
 
+
 class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryModelSerializer
     lookup_field = "slug"
+
 
 class ProductListCreateAPIView(ListCreateAPIView):
     queryset = Product.objects.all().select_related("category")
@@ -28,10 +31,12 @@ class ProductListCreateAPIView(ListCreateAPIView):
     search_fields = ["name", "description"]
     ordering_fields = ["price", "name"]
 
+
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().select_related("category")
     serializer_class = ProductModelSerializer
     lookup_field = "slug"
+
 
 class ProductVariantListCreateAPIView(ListCreateAPIView):
     queryset = ProductVariant.objects.all().select_related("product")
@@ -40,17 +45,20 @@ class ProductVariantListCreateAPIView(ListCreateAPIView):
     filterset_fields = ["product__slug", "color", "size", "ram", "storage", "is_available"]
     search_fields = ["product__name"]
 
+
 class ProductVariantDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductVariant.objects.all().select_related("product")
     serializer_class = ProductVariantModelSerializer
 
+
 class ProductImagesListCreateAPIView(ListCreateAPIView):
-    queryset = ProductImages.objects.all().select_related("product")
+    queryset = ProductImages.objects.select_related("product")
     serializer_class = ProductImageModelSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["product__slug", "is_main"]
     search_fields = ["product__name"]
 
+
 class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = ProductImages.objects.all().select_related("product")
+    queryset = ProductImages.objects.select_related("product")
     serializer_class = ProductImageModelSerializer
