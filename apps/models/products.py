@@ -30,7 +30,7 @@ class Category(MPTTModel):
         order_insertion_by = ['name']
 
 
-class Product(MPTTModel):
+class Product(CreatedBaseModel):
     name = CharField(max_length=255)
     category = ForeignKey('apps.Category', CASCADE, related_name='products')
     price = DecimalField(max_digits=10, decimal_places=2)
@@ -46,7 +46,7 @@ class Product(MPTTModel):
         return self.name
 
 
-class ProductImage(MPTTModel):
+class ProductImage(CreatedBaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name='images')
     image = ImageField(upload_to='products/')
     is_main = BooleanField(default=False, help_text="Asosiy rasm")
@@ -55,7 +55,7 @@ class ProductImage(MPTTModel):
         return f"Image for {self.product.name}"
 
 
-class ProductVariant(MPTTModel):
+class ProductVariant(CreatedBaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name='variants')
     color = CharField(max_length=50, blank=True, null=True)  # Rang
     size = CharField(max_length=50, blank=True, null=True)  # O‘lcham (S, M, L yoki 50 litr)

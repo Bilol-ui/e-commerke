@@ -21,6 +21,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("role", "admin")
 
         if not extra_fields.get("is_staff"):
             raise ValueError("Superuserda is_staff=Tru boishi kerak")
@@ -31,10 +32,17 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    ROLE_CHOICES = (
+        ("user", "User"),
+        ("moderator", "Moderator"),
+        ("admin", "Admin"),
+    )
     username = None
     email = EmailField(unique=True, null=True, blank=True)
     phone = CharField(max_length=20, unique=True, null=True, blank=True)
     is_verified = BooleanField(db_default=False)
+    role = CharField(max_length=15, choices=ROLE_CHOICES, default="user")
+
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
