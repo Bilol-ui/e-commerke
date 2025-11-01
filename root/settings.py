@@ -195,3 +195,25 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+JAZZMIN_SETTINGS = {
+    "site_title": "Admin Panel",
+    "site_header": "Django administration",
+    "site_brand": "Admin Panel",
+    "welcome_sign": "Xush kelibsiz, admin!",
+    "copyright": "© 2025 Somsa Group",
+    "show_ui_builder": True,
+
+    # ✅ Siz yuborgan rasmni logotip sifatida qo‘shamiz
+    "site_logo": "images/Tipos_de_comercio_electronico_0.png",
+    "login_logo": "images/Tipos_de_comercio_electronico_0.png",
+    "login_logo_dark": "images/Tipos_de_comercio_electronico_0.png",
+
+    # Orqa fonni qora emas, biroz yumshoq qilish mumkin:
+    "dark_mode_theme": "cyborg",
+}
+
+
+AUTHENTICATION_BACKENDS = [
+    "apps.backends.EmailOrPhoneBackend",  # 🔹 Sizning backend joylashuvi
+    "django.contrib.auth.backends.ModelBackend",
+]

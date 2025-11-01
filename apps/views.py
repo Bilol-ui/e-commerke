@@ -10,6 +10,7 @@ from rest_framework.templatetags.rest_framework import data
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.models import Category, Product, ProductVariant, ProductImages
+from apps.permissions import RoleBasedPermission
 from apps.serializers import (
     CategoryModelSerializer,
     ProductModelSerializer,
@@ -70,7 +71,7 @@ class ProductListCreateAPIView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "description"]
     ordering_fields = ["price", "name"]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,RoleBasedPermission]
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().select_related("category")
