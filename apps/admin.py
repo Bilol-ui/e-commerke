@@ -6,8 +6,6 @@ from apps.models import Category, Product, ProductImage, ProductVariant, User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
-
-
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     # Admin ro‘yxatda chiqadigan ustunlar
@@ -32,13 +30,13 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    # ✅ Login formasida Email / Phone label chiqishi uchun
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        username_field = self.username_field
-        if username_field in form.base_fields:
-            form.base_fields[username_field].label = "Email / Phone number"
-        return form
+    # # ✅ Login formasida Email / Phone label chiqishi uchun
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     username_field = self.username_field
+    #     if username_field in form.base_fields:
+    #         form.base_fields[username_field].label = "Email / Phone number"
+    #     return form
 
 
 @admin.register(Category)
