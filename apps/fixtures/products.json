@@ -1,0 +1,77 @@
+[
+  {
+    "model": "apps.category",
+    "pk": 1,
+    "fields": {
+      "name": "Telefonlar",
+      "slug": "telefonlar",
+      "icon": "fa-mobile",
+      "parent": null
+    }
+  },
+  {
+    "model": "apps.category",
+    "pk": 2,
+    "fields": {
+      "name": "Televizorlar",
+      "slug": "televizorlar",
+      "icon": "fa-tv",
+      "parent": null
+    }
+  },
+  {
+    "model": "apps.product",
+    "pk": 1,
+    "fields": {
+      "name": "iPhone 15 Pro Max",
+      "category": 1,
+      "price": "1599.99",
+      "description": "Yangi iPhone 15 Pro Max — kuchli kamera, Titanium korpus.",
+      "slug": "iphone-15-pro-max",
+      "created_at": "2025-11-05T10:00:00Z",
+      "updated_at": "2025-11-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "apps.product",
+    "pk": 2,
+    "fields": {
+      "name": "Samsung QLED 65”",
+      "category": 2,
+      "price": "2999.99",
+      "description": "Ultra HD Smart TV — 65 dyuymli QLED ekran.",
+      "slug": "samsung-qled-65",
+      "created_at": "2025-11-05T10:00:00Z",
+      "updated_at": "2025-11-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "apps.productvariant",
+    "pk": 1,
+    "fields": {
+      "product": 1,
+      "color": "Titan Gray",
+      "storage": "256GB",
+      "ram": "8GB",
+      "price": "1599.99",
+      "stock": 10,
+      "is_available": true,
+      "created_at": "2025-11-05T10:00:00Z",
+      "updated_at": "2025-11-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "apps.productvariant",
+    "pk": 2,
+    "fields": {
+      "product": 2,
+      "diagonal": "65”",
+      "material": "Plastic",
+      "price": "2999.99",
+      "stock": 5,
+      "is_available": true,
+      "created_at": "2025-11-05T10:00:00Z",
+      "updated_at": "2025-11-05T10:00:00Z"
+    }
+  }
+]

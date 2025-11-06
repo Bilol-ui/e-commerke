@@ -10,6 +10,7 @@ from rest_framework.templatetags.rest_framework import data
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.models import Category, Product, ProductVariant, ProductImages
+from apps.paginations import Pagination
 from apps.permissions import RoleBasedPermission
 from apps.serializers import (
     CategoryModelSerializer,
@@ -58,6 +59,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "slug"]
     permission_classes = [IsAuthenticated]
+    pagination_class = Pagination
 
 class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
@@ -72,6 +74,7 @@ class ProductListCreateAPIView(ListCreateAPIView):
     search_fields = ["name", "description"]
     ordering_fields = ["price", "name"]
     permission_classes = [IsAuthenticated,RoleBasedPermission]
+    pagination_class = Pagination
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().select_related("category")
@@ -85,6 +88,7 @@ class ProductVariantListCreateAPIView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["product__slug", "color", "size", "ram", "storage", "is_available"]
     search_fields = ["product__name"]
+    pagination_class = Pagination
 
 
 class ProductVariantDetailAPIView(RetrieveUpdateDestroyAPIView):
@@ -98,7 +102,7 @@ class ProductImagesListCreateAPIView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["product__slug", "is_main"]
     search_fields = ["product__name"]
-
+    pagination_class = Pagination
 
 class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.select_related("product")

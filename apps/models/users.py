@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
 from django.db.models import EmailField, CharField, BooleanField
+from django.db.models.enums import TextChoices
 
 
 class CustomUserManager(BaseUserManager):
@@ -32,16 +33,15 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    ROLE_CHOICES = (
-        ("user", "User"),
-        ("moderator", "Moderator"),
-        ("admin", "Admin"),
-    )
+    class Roles(TextChoices):
+        USER = "user","User"
+        MODERATOR = "moderator", "Moderator"
+        ADMIN = "admin","Admin"
     username = None
     email = EmailField(unique=True, null=True, blank=True)
     phone = CharField(max_length=20, unique=True, null=True, blank=True)
     is_verified = BooleanField(db_default=False)
-    role = CharField(max_length=15, choices=ROLE_CHOICES, default="user")
+    role = CharField(max_length=15, choices=Roles.choices, default=Roles.USER)
 
 
     USERNAME_FIELD = "email"
