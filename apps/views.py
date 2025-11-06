@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
+from drf_spectacular.utils import extend_schema
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework import filters, status
 from django_filters.rest_framework import DjangoFilterBackend
@@ -20,9 +22,13 @@ from apps.serializers import (
 )
 
 User = get_user_model()
+
+
+@extend_schema(tags=['Auth'])
 class RegisterAPIView(CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+
     def post(self, request, *args, **kwargs):
         try:
             serializer = self.get_serializer(data=request.data)
@@ -36,22 +42,23 @@ class RegisterAPIView(CreateAPIView):
             )
             refresh = RefreshToken.for_user(user)
             return Response({
-                "message":"Foydalanuvchi muvaffaqiyatli ro‘yxatdan o‘tdi ✅",
-                "user":{
-                    "id":user.id,
-                    "email":user.email,
-                    "phone":user.phone
+                "message": "Foydalanuvchi muvaffaqiyatli ro‘yxatdan o‘tdi ✅",
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "phone": user.phone
                 },
-                "tokens":{
-                    "refresh":str(refresh),
-                    "access":str(refresh.access_token),
+                "tokens": {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
                 }
 
-            },status=status.HTTP_201_CREATED)
+            }, status=status.HTTP_201_CREATED)
         except ValidationError as e:
             return Response({"errors": e.detail}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
@@ -60,6 +67,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
     search_fields = ["name", "slug"]
     permission_classes = [IsAuthenticated]
     pagination_class = Pagination
+    authentication_classes = []
 
 class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
@@ -73,17 +81,18 @@ class ProductListCreateAPIView(ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "description"]
     ordering_fields = ["price", "name"]
-    permission_classes = [IsAuthenticated,RoleBasedPermission]
+    permission_classes = [IsAuthenticated, RoleBasedPermission]
     pagination_class = Pagination
 
+
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all().select_related("category")
+    queryset = Product.objects.select_related("category")
     serializer_class = ProductModelSerializer
     lookup_field = "slug"
 
 
 class ProductVariantListCreateAPIView(ListCreateAPIView):
-    queryset = ProductVariant.objects.all().select_related("product")
+    queryset = ProductVariant.objects.select_related("product")
     serializer_class = ProductVariantModelSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["product__slug", "color", "size", "ram", "storage", "is_available"]
@@ -92,7 +101,7 @@ class ProductVariantListCreateAPIView(ListCreateAPIView):
 
 
 class ProductVariantDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = ProductVariant.objects.all().select_related("product")
+    queryset = ProductVariant.objects.select_related("product")
     serializer_class = ProductVariantModelSerializer
 
 
@@ -103,6 +112,7 @@ class ProductImagesListCreateAPIView(ListCreateAPIView):
     filterset_fields = ["product__slug", "is_main"]
     search_fields = ["product__name"]
     pagination_class = Pagination
+
 
 class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.select_related("product")
