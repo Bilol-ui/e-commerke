@@ -6,6 +6,7 @@ from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
 
 from apps.models import ProductImage, Product
+from apps.models.banners import Banner
 from apps.models.products import Category, ProductVariant
 
 User = get_user_model()
@@ -64,12 +65,7 @@ class ProductModelSerializer(ModelSerializer):
         fields = "__all__"
 
 
-
-
-
 class ProductVariantModelSerializer(ModelSerializer):
-
-
     # product nomini o‘qish uchun (faqat ko‘rinish, o‘zgartirib bo‘lmaydi)
     product_name = CharField(source='product.name', read_only=True)
 
@@ -90,3 +86,9 @@ class ProductVariantModelSerializer(ModelSerializer):
             "is_available",
         ]
         read_only_fields = ["is_available"]
+
+
+class BannerModelSerializer(ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = ['id', 'title', 'image', 'is_active', 'created_at', 'updated_at']
