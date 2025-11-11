@@ -1,6 +1,5 @@
-from django_filters import FilterSet, NumberFilter, CharFilter
-
 from apps.models import Product
+from django_filters import CharFilter, FilterSet, NumberFilter
 
 
 class ProductFilter(FilterSet):

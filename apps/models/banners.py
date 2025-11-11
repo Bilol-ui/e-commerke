@@ -1,6 +1,5 @@
-from django.db.models import CharField, ImageField, BooleanField
-
 from apps.models.base import CreatedBaseModel
+from django.db.models import BooleanField, CharField, ImageField
 
 
 class Banner(CreatedBaseModel):

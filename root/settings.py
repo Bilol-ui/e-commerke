@@ -177,7 +177,7 @@ REST_FRAMEWORK = {
 
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-'DEFAULT_PERMISSION_CLASSES': [
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',  # 🔓 hamma endpoint ochiq
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -188,8 +188,6 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
-
-
 
 }
 
@@ -215,7 +213,6 @@ JAZZMIN_SETTINGS = {
     # Orqa fonni qora emas, biroz yumshoq qilish mumkin:
     "dark_mode_theme": "cyborg",
 }
-
 
 AUTHENTICATION_BACKENDS = [
     "apps.backends.EmailOrPhoneBackend",  # 🔹 Sizning backend joylashuvi

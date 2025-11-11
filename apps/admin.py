@@ -1,9 +1,8 @@
+from apps.models import Category, Product, ProductImage, ProductVariant, User
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline
-from mptt.admin import MPTTModelAdmin
-
-from apps.models import Category, Product, ProductImage, ProductVariant, User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from mptt.admin import MPTTModelAdmin
 
 
 @admin.register(User)

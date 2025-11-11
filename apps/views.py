@@ -1,26 +1,25 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django.core.exceptions import ValidationError
-from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
-from rest_framework import filters, status
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.templatetags.rest_framework import data
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from apps.models import Category, Product, ProductVariant, ProductImages
+from apps.models import Category, Product, ProductImages, ProductVariant
 from apps.models.banners import Banner
 from apps.paginations import Pagination
 from apps.permissions import RoleBasedPermission
 from apps.serializers import (
+    BannerModelSerializer,
     CategoryModelSerializer,
+    ProductImageModelSerializer,
     ProductModelSerializer,
     ProductVariantModelSerializer,
-    ProductImageModelSerializer, RegisterSerializer, BannerModelSerializer,
+    RegisterSerializer,
 )
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.core.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import OpenApiExample, OpenApiResponse, extend_schema
+from rest_framework import filters, status
+from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
@@ -204,6 +203,7 @@ class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.select_related("product")
     serializer_class = ProductImageModelSerializer
 
+
 class BannerListCreateAPIView(ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerModelSerializer
@@ -213,7 +213,4 @@ class BannerListCreateAPIView(ListCreateAPIView):
     search_fields = ['title']
 
 
-class BannerDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Banner.objects.all()
-    serializer_class = BannerModelSerializer
-    permission_classes = [IsAuthenticated]  # faqat login qilgan adminlar tahrir qilishi mumkin
+

@@ -21,3 +21,9 @@ dependencies = [
     "python3-distutils>=0.0.1",
     "redis>=6.4.0",
 ]
+
+
+[tool.isort]
+profile = "hug"
+skip = "build,.tox,.venv"
+src_paths="isort,test"

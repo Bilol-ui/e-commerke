@@ -1,13 +1,12 @@
 import re
 
+from apps.models import Product, ProductImage
+from apps.models.banners import Banner
+from apps.models.products import Category, ProductVariant
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField
 from rest_framework.serializers import ModelSerializer
-
-from apps.models import ProductImage, Product
-from apps.models.banners import Banner
-from apps.models.products import Category, ProductVariant
 
 User = get_user_model()
 

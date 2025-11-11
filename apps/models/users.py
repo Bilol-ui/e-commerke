@@ -1,7 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
-from django.db.models import EmailField, CharField, BooleanField
+from django.db.models import BooleanField, CharField, EmailField
 from django.db.models.enums import TextChoices
 
 

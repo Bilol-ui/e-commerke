@@ -1,15 +1,23 @@
 import os.path
 from io import BytesIO
 
-from PIL import Image
+from apps.models.base import CreatedBaseModel
 from django.core.files.base import ContentFile
-from django.db.models import CharField, TextField, ForeignKey, CASCADE, DecimalField, ImageField, PositiveIntegerField, \
-    BooleanField, SlugField
+from django.db.models import (
+    CASCADE,
+    BooleanField,
+    CharField,
+    DecimalField,
+    ForeignKey,
+    ImageField,
+    PositiveIntegerField,
+    SlugField,
+    TextField,
+)
 from django.utils.text import slugify
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
-
-from apps.models.base import CreatedBaseModel
+from PIL import Image
 
 
 class Category(MPTTModel):
