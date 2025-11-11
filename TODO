@@ -37,7 +37,10 @@ TASK
     - admin, moderator crud amalini bajara oladi
 
 
-7. isort, flake8
+7. ✅ + isort, flake8
 8. fixture qoshish (barcha modelga)
-9. list larga pagination qoshish (page, size)
+9. ✅ + list larga pagination qoshish (page, size)
 10. bannerlar apisini chiqarish
+11. cart va wishlist apilarini
+12. order qilish apisini chiqarish
+13. order history apisini chiqarish
