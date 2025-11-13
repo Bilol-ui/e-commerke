@@ -207,10 +207,10 @@ class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
 class BannerListCreateAPIView(ListCreateAPIView):
     queryset = Banner.objects.all()
     serializer_class = BannerModelSerializer
-    permission_classes = [AllowAny]  # barcha foydalanuvchilar ko'ra oladi
+    permission_classes = [IsAuthenticated, AllowAny]  # barcha foydalanuvchilar ko'ra oladi
     pagination_class = Pagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
-
+    authentication_classes = []
 
 
