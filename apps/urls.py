@@ -8,7 +8,11 @@ from .views import (
     ProductListCreateAPIView,
     ProductVariantDetailAPIView,
     ProductVariantListCreateAPIView,
-    RegisterAPIView,
+    RegisterAPIView, CartListCreateAPIView,
+    CartItemListCreateAPIView,
+    WishlistCreateAPIView,
+    OrderListCreateViewSet,
+OrderHistoryListCreateAPIView,
 )
 
 urlpatterns = [
@@ -22,6 +26,10 @@ urlpatterns = [
     path("variants", ProductVariantListCreateAPIView.as_view(), name="variant-list"),
     path("variants/<int:pk>/", ProductVariantDetailAPIView.as_view(), name="variant-detail"),
     path('banners', BannerListCreateAPIView.as_view(), name='banner-list'),
-    # path("images", ProductImagesListCreateAPIView.as_view(), name="image-list"),
-    # path("images/<int:pk>/", ProductImagesDetailAPIView.as_view(), name="image-detail"),
+    path('carts',CartListCreateAPIView.as_view(),name='cart-list'),
+    path('cart_items',CartItemListCreateAPIView.as_view(),name='carts-items'),
+    path('wishlist',WishlistCreateAPIView.as_view(),name='wishlist'),
+    path('orders',OrderListCreateViewSet.as_view(),name='orders-list'),
+    path('order_history',OrderHistoryListCreateAPIView.as_view(),name='order-history')
+
 ]

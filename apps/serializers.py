@@ -1,11 +1,14 @@
 import re
 
+from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
+
 from apps.models import Product, ProductImage
 from apps.models.banners import Banner
+from apps.models.carts import CartItem, Cart, Wishlist, OrderItem, Order, OrderHistory
 from apps.models.products import Category, ProductVariant
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField
+from rest_framework.fields import CharField, IntegerField
 from rest_framework.serializers import ModelSerializer
 
 User = get_user_model()
@@ -91,3 +94,49 @@ class BannerModelSerializer(ModelSerializer):
     class Meta:
         model = Banner
         fields = ['id', 'title', 'image', 'is_active', 'created_at', 'updated_at']
+
+class CartItemModelSerializer(ModelSerializer):
+    product_name = CharField(source='product.name', read_only=True)
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'product', 'product_name', 'quantity', 'unit_price', 'line_total']
+
+
+class CartModelSerializer(ModelSerializer):
+    items = CartItemModelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'user', 'total', 'items']
+
+class WishListModelSerializer(ModelSerializer):
+    product_names = SlugRelatedField(many=True,read_only=True,slug_field='name',source='products')
+
+    class Meta:
+        model = Wishlist
+        fields = ['id', 'user', 'product_names']
+
+class OrderItemModelSerializer(ModelSerializer):
+    product_name = CharField(source='product.name',read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'product_name', 'quantity', 'unit_price', 'line_total']
+
+class OrderModelSerializer(ModelSerializer):
+    items = OrderItemModelSerializer(many=True,read_only=True)
+    item_count = IntegerField(read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'total', 'status', 'item_count', 'items', 'created_at']
+
+
+class OrderHistorySerializer(ModelSerializer):
+    user_name = CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = OrderHistory
+        fields = ['id', 'order', 'user', 'user_name', 'action', 'description', 'created_at']
+

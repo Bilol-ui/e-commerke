@@ -1,5 +1,6 @@
 from apps.models import Category, Product, ProductImages, ProductVariant
 from apps.models.banners import Banner
+from apps.models.carts import Cart, CartItem, Wishlist, Order, OrderHistory
 from apps.paginations import Pagination
 from apps.permissions import RoleBasedPermission
 from apps.serializers import (
@@ -8,7 +9,8 @@ from apps.serializers import (
     ProductImageModelSerializer,
     ProductModelSerializer,
     ProductVariantModelSerializer,
-    RegisterSerializer,
+    RegisterSerializer, CartModelSerializer, CartItemModelSerializer, WishListModelSerializer, OrderModelSerializer,
+    OrderHistorySerializer,
 )
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
@@ -214,3 +216,34 @@ class BannerListCreateAPIView(ListCreateAPIView):
     authentication_classes = []
 
 
+@extend_schema(tags=["Cart"])
+class CartListCreateAPIView(ListCreateAPIView):
+    queryset = Cart.objects.prefetch_related('items__product').all()
+    serializer_class = CartModelSerializer
+    permission_classes = [IsAuthenticated]
+
+
+@extend_schema(tags=["Cart Items"])
+class CartItemListCreateAPIView(ListCreateAPIView):
+    queryset = CartItem.objects.select_related('cart', 'product')
+    serializer_class = CartItemModelSerializer
+    permission_classes = [IsAuthenticated]
+
+
+@extend_schema(tags=["Wishlist"])
+class WishlistCreateAPIView(ListCreateAPIView):
+    queryset = Wishlist.objects.prefetch_related('products')
+    serializer_class = WishListModelSerializer
+
+
+@extend_schema(tags=["Orders"])
+class OrderListCreateViewSet(ListCreateAPIView):
+    queryset = Order.objects.prefetch_related('items__product')
+    serializer_class = OrderModelSerializer
+
+
+@extend_schema(tags=["Order History"])
+class OrderHistoryListCreateAPIView(ListCreateAPIView):
+    queryset = OrderHistory.objects.select_related('user', 'order')
+    serializer_class = OrderHistorySerializer
+    permission_classes = [IsAuthenticated]
