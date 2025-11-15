@@ -1,8 +1,8 @@
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
-from django.db.models import OneToOneField, CASCADE, ForeignKey, PROTECT, ManyToManyField, Model, CharField, \
-    DateTimeField, TextChoices, SET_NULL
+from django.db.models import OneToOneField, CASCADE, ForeignKey, PROTECT, ManyToManyField, CharField, \
+    TextChoices, SET_NULL
 from django.db.models.fields import PositiveIntegerField, TextField
 from rest_framework.fields import DecimalField
 
@@ -13,7 +13,7 @@ User = AUTH_USER_MODEL
 
 
 class Cart(CreatedBaseModel):
-    user = OneToOneField(User, CASCADE, related_name='cart')
+    user = OneToOneField('apps.User', CASCADE, related_name='cart')
     total = DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
 
     def recalc_total(self):
@@ -26,11 +26,10 @@ class Cart(CreatedBaseModel):
 
 
 class CartItem(CreatedBaseModel):
-    cart = ForeignKey(Cart, CASCADE, related_name='items')
-    product = ForeignKey('products.Product', PROTECT)
+    cart = ForeignKey('apps.Cart', CASCADE, related_name='items')
+    product = ForeignKey('apps.Product', PROTECT)
     quantity = PositiveIntegerField(validators=[MinValueValidator(1)], default=1)
     unit_price = DecimalField(max_digits=12, decimal_places=2)
-    line_total = DecimalField(max_digits=12, decimal_places=2)
 
     class Meta:
         unique_together = ('cart', 'product')
@@ -50,14 +49,11 @@ class CartItem(CreatedBaseModel):
 
 
 class Wishlist(CreatedBaseModel):
-    user = OneToOneField(User, CASCADE, related_name='wishlist')
-    products = ManyToManyField('products.Product', related_name='wishlists', blank=True)
+    user = OneToOneField('apps.User', CASCADE, related_name='wishlist')
+    products = ManyToManyField('apps.Product', related_name='wishlists', blank=True)
 
     def __str__(self):
         return f"Wishlist({self.user})"
-
-
-
 
 
 class Order(CreatedBaseModel):
@@ -67,14 +63,12 @@ class Order(CreatedBaseModel):
         DELIVERED = 'delivered', 'Delivered'
         CANCELLED = 'cancelled', 'Cancelled'
 
-    user = ForeignKey(User, CASCADE, related_name='orders')
+    user = ForeignKey('apps.User', on_delete=CASCADE, related_name='orders')
     total = DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
-    status = CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    created_at = DateTimeField(auto_now_add=True)
-    updated_at = DateTimeField(auto_now=True)
+    status = CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.user}"
+        return f"Order #{self.id} - {self.user} - {self.status}"
 
     @property
     def item_count(self):
@@ -82,18 +76,18 @@ class Order(CreatedBaseModel):
 
 
 class OrderItem(CreatedBaseModel):
-    order = ForeignKey(Order, CASCADE, related_name='items')
-    product = ForeignKey('products.Product',PROTECT)
+    order = ForeignKey('apps.Order', CASCADE, related_name='items')
+    product = ForeignKey('apps.Product', PROTECT)
     quantity = PositiveIntegerField(validators=[MinValueValidator(1)], default=1)
     unit_price = DecimalField(max_digits=12, decimal_places=2)
-    line_total = DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
 
+
 class OrderHistory(CreatedBaseModel):
     class ActionType(TextChoices):
-        CREATED = "created","Buyurtma yaratildi"
+        CREATED = "created", "Buyurtma yaratildi"
         STATUS_CHANGED = "status_changed", "Holat o‘zgardi"
         PAYMENT_CONFIRMED = "payment_confirmed", "To‘lov tasdiqlandi"
         ITEM_ADDED = "item_added", "Mahsulot qo‘shildi"
@@ -101,13 +95,14 @@ class OrderHistory(CreatedBaseModel):
         CANCELLED = "cancelled", "Buyurtma bekor qilindi"
 
     order = ForeignKey('Order', CASCADE, related_name='history_records', verbose_name="Buyurtma")
-    user = ForeignKey('users.User',SET_NULL,null=True,blank=True,related_name='order_history_actions',verbose_name="Foydalanuvchi")
-    action = CharField(max_length=50,choices=ActionType.choices,default=ActionType.CREATED,verbose_name="Harakat turi")
-    description = TextField(blank=True,null=True,verbose_name="Qo‘shimcha ma’lumot (izoh)"
-    )
+    user = ForeignKey('apps.User', SET_NULL, null=True, blank=True, related_name='order_history_actions',
+                      verbose_name="Foydalanuvchi")
+    action = CharField(max_length=50, choices=ActionType.choices, default=ActionType.CREATED,
+                       verbose_name="Harakat turi")
+    description = TextField(blank=True, null=True, verbose_name="Qo‘shimcha ma’lumot (izoh)"
+                            )
 
     class Meta:
         ordering = ['-created_at']
         verbose_name = "Buyurtma tarixi"
         verbose_name_plural = "Buyurtmalar tarixi"
-
