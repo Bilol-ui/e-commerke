@@ -1,0 +1,114 @@
+[
+  {
+    "model": "apps.carts.cart",
+    "pk": 1,
+    "fields": {
+      "customer": 1,
+      "created_at": "2025-01-01T10:00:00Z"
+    }
+  },
+
+  {
+    "model": "apps.carts.cartitem",
+    "pk": 1,
+    "fields": {
+      "cart": 1,
+      "product_version": 1,
+      "quantity": 2,
+      "price": 25000,
+      "created_at": "2025-01-01T10:10:00Z"
+    }
+  },
+  {
+    "model": "apps.carts.cartitem",
+    "pk": 2,
+    "fields": {
+      "cart": 1,
+      "product_version": 2,
+      "quantity": 1,
+      "price": 35000,
+      "created_at": "2025-01-01T10:12:00Z"
+    }
+  },
+
+
+  {
+    "model": "apps.carts.wishlist",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "products": [1, 2],
+      "created_at": "2025-01-01T09:00:00Z"
+    }
+  },
+
+
+  {
+    "model": "apps.carts.order",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "total": "85000.00",
+      "status": "pending",
+      "created_at": "2025-01-02T12:00:00Z"
+    }
+  },
+
+  {
+    "model": "apps.carts.orderitem",
+    "pk": 1,
+    "fields": {
+      "order": 1,
+      "product": 1,
+      "quantity": 2,
+      "price": "25000.00",
+      "created_at": "2025-01-02T12:05:00Z"
+    }
+  },
+  {
+    "model": "apps.carts.orderitem",
+    "pk": 2,
+    "fields": {
+      "order": 1,
+      "product": 2,
+      "quantity": 1,
+      "price": "35000.00",
+      "created_at": "2025-01-02T12:06:00Z"
+    }
+  },
+
+
+  {
+    "model": "apps.carts.orderhistory",
+    "pk": 1,
+    "fields": {
+      "order": 1,
+      "user": 1,
+      "action": "created",
+      "description": "Buyurtma yaratildi",
+      "created_at": "2025-01-02T12:00:10Z"
+    }
+  },
+  {
+    "model": "apps.carts.orderhistory",
+    "pk": 2,
+    "fields": {
+      "order": 1,
+      "user": 1,
+      "action": "item_added",
+      "description": "Mahsulot qo‘shildi (Lavash)",
+      "created_at": "2025-01-02T12:05:10Z"
+    }
+  },
+  {
+    "model": "apps.carts.orderhistory",
+    "pk": 3,
+    "fields": {
+      "order": 1,
+      "user": 1,
+      "action": "status_changed",
+      "description": "Holat pending → processing",
+      "created_at": "2025-01-02T12:20:00Z"
+    }
+  }
+]

@@ -1,9 +1,10 @@
 from decimal import Decimal
+from django.utils.translation import gettext_lazy as _
 
 from django.core.validators import MinValueValidator
 from django.db.models import OneToOneField, CASCADE, ForeignKey, PROTECT, ManyToManyField, CharField, \
     TextChoices, SET_NULL
-from django.db.models.fields import PositiveIntegerField, TextField
+from django.db.models.fields import PositiveIntegerField, TextField, IntegerField, BigIntegerField
 from rest_framework.fields import DecimalField
 
 from apps.models.base import CreatedBaseModel
@@ -13,39 +14,28 @@ User = AUTH_USER_MODEL
 
 
 class Cart(CreatedBaseModel):
-    user = OneToOneField('apps.User', CASCADE, related_name='cart')
-    total = DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    customer = ForeignKey('apps.User', CASCADE, related_name='cart')
+    # total = DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
+    # @property
+    # def total(self):
+    #     return sum(item.total for item in self.items.all())
 
-    def recalc_total(self):
-        total = Decimal('0.00')
-        for item in self.items.all():
-            total += item.line_total
-        self.total = total
-        self.save(update_fields=['total', 'updated_at'])
-        return self.total
+    def __str__(self):
+        return f"Cart of {self.customer.phone}"
 
 
 class CartItem(CreatedBaseModel):
     cart = ForeignKey('apps.Cart', CASCADE, related_name='items')
-    product = ForeignKey('apps.Product', PROTECT)
-    quantity = PositiveIntegerField(validators=[MinValueValidator(1)], default=1)
-    unit_price = DecimalField(max_digits=12, decimal_places=2)
+    product_version = ForeignKey('apps.ProductVariant', CASCADE)
+    quantity = IntegerField(_('Quantity'),default=1)
+    price = BigIntegerField(_('Price at addition'),default=0)
 
-    class Meta:
-        unique_together = ('cart', 'product')
+    @property
+    def total(self):
+        return self.quantity * self.price
 
     def __str__(self):
-        return f"{self.product} x {self.quantity}"
-
-    def save(self, *args, **kwargs):
-        if not self.unit_price:
-            self.unit_price = self.product.price
-        self.line_total = (self.unit_price or self.product.price) * self.quantity
-        super().save(*args, **kwargs)
-        try:
-            self.cart.recalc_total()
-        except Exception:
-            pass
+        return f"{self.product_version.product.name}({self.quantity}x)"
 
 
 class Wishlist(CreatedBaseModel):
@@ -79,7 +69,7 @@ class OrderItem(CreatedBaseModel):
     order = ForeignKey('apps.Order', CASCADE, related_name='items')
     product = ForeignKey('apps.Product', PROTECT)
     quantity = PositiveIntegerField(validators=[MinValueValidator(1)], default=1)
-    unit_price = DecimalField(max_digits=12, decimal_places=2)
+    price = DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"

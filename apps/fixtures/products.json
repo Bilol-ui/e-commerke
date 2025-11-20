@@ -1,24 +1,5 @@
 [
-  {
-    "model": "apps.category",
-    "pk": 1,
-    "fields": {
-      "name": "Telefonlar",
-      "slug": "telefonlar",
-      "icon": "fa-mobile",
-      "parent": null
-    }
-  },
-  {
-    "model": "apps.category",
-    "pk": 2,
-    "fields": {
-      "name": "Televizorlar",
-      "slug": "televizorlar",
-      "icon": "fa-tv",
-      "parent": null
-    }
-  },
+
   {
     "model": "apps.product",
     "pk": 1,
