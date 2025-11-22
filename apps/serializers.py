@@ -96,19 +96,23 @@ class BannerModelSerializer(ModelSerializer):
         fields = ['id', 'title', 'image', 'is_active', 'created_at', 'updated_at']
 
 class CartItemModelSerializer(ModelSerializer):
-    product_name = CharField(source='product.name', read_only=True)
-
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'product_name', 'quantity', 'unit_price']
+        fields = ['id', 'cart','product_version',  'quantity', ]
+        read_only_fields = 'cart','quantity'
 
+    def create(self,validate_data):
+        user = self.context['request'].user
+        cart = Cart.objects.filter(user=user).first()
+        if not cart:
+            cart = Cart.objects.create(user=user)
+
+        return super().create(validate_data | {'cart_id':cart.id})
 
 class CartModelSerializer(ModelSerializer):
-    items = CartItemModelSerializer(many=True, read_only=True)
-
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'total', 'items']
+        fields = '__all__'
 
 class WishListModelSerializer(ModelSerializer):
     product_names = SlugRelatedField(many=True,read_only=True,slug_field='name',source='products')
@@ -122,7 +126,7 @@ class OrderItemModelSerializer(ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_name', 'quantity', 'unit_price']
+        fields = ['id', 'product', 'product_name', 'quantity', 'price']
 
 class OrderModelSerializer(ModelSerializer):
     items = OrderItemModelSerializer(many=True,read_only=True)
@@ -130,7 +134,7 @@ class OrderModelSerializer(ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'total', 'status', 'item_count', 'items', 'created_at']
+        fields = ['id', 'user', 'status', 'item_count', 'items', 'created_at']
 
 
 class OrderHistorySerializer(ModelSerializer):

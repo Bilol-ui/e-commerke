@@ -1,3 +1,7 @@
+from importlib.resources._common import _
+
+from rest_framework.exceptions import NotAuthenticated
+
 from apps.models import Category, Product, ProductImages, ProductVariant
 from apps.models.banners import Banner
 from apps.models.carts import Cart, CartItem, Wishlist, Order, OrderHistory
@@ -110,6 +114,8 @@ User = get_user_model()
         ),
     }
 )
+@extend_schema(tags=["auth"])
+
 class RegisterAPIView(CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -144,6 +150,7 @@ class RegisterAPIView(CreateAPIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@extend_schema(tags=["Category"])
 
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
@@ -160,6 +167,7 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 #     serializer_class = CategoryModelSerializer
 #     lookup_field = "slug"
 
+@extend_schema(tags=["product"])
 
 class ProductListCreateAPIView(ListCreateAPIView):
     queryset = Product.objects.all().select_related("category")
@@ -171,12 +179,14 @@ class ProductListCreateAPIView(ListCreateAPIView):
     pagination_class = Pagination
     authentication_classes = []
 
+@extend_schema(tags=["product"])
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.select_related("category")
     serializer_class = ProductModelSerializer
     lookup_field = "slug"
 
+@extend_schema(tags=["product"])
 
 class ProductVariantListCreateAPIView(ListCreateAPIView):
     queryset = ProductVariant.objects.select_related("product")
@@ -186,11 +196,13 @@ class ProductVariantListCreateAPIView(ListCreateAPIView):
     search_fields = ["product__name"]
     pagination_class = Pagination
 
+@extend_schema(tags=["product"])
 
 class ProductVariantDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductVariant.objects.select_related("product")
     serializer_class = ProductVariantModelSerializer
 
+@extend_schema(tags=["product"])
 
 class ProductImagesListCreateAPIView(ListCreateAPIView):
     queryset = ProductImages.objects.select_related("product")
@@ -200,11 +212,13 @@ class ProductImagesListCreateAPIView(ListCreateAPIView):
     search_fields = ["product__name"]
     pagination_class = Pagination
 
+@extend_schema(tags=["product"])
 
 class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.select_related("product")
     serializer_class = ProductImageModelSerializer
 
+@extend_schema(tags=["banners"])
 
 class BannerListCreateAPIView(ListCreateAPIView):
     queryset = Banner.objects.all()
@@ -222,8 +236,8 @@ class CartListCreateAPIView(ListCreateAPIView):
     serializer_class = CartModelSerializer
     permission_classes = [IsAuthenticated]
 
+@extend_schema(tags=["Cart"])
 
-@extend_schema(tags=["Cart Items"])
 class CartItemListCreateAPIView(ListCreateAPIView):
     queryset = CartItem.objects.select_related('cart', 'product')
     serializer_class = CartItemModelSerializer
@@ -234,15 +248,20 @@ class CartItemListCreateAPIView(ListCreateAPIView):
 class WishlistCreateAPIView(ListCreateAPIView):
     queryset = Wishlist.objects.prefetch_related('products')
     serializer_class = WishListModelSerializer
+    permission_classes = [IsAuthenticated]
 
-
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_anonymous:
+            raise NotAuthenticated(_("You are not authenticated"))
+        return Wishlist.objects.filter(user=user)
 @extend_schema(tags=["Orders"])
 class OrderListCreateViewSet(ListCreateAPIView):
     queryset = Order.objects.prefetch_related('items__product')
     serializer_class = OrderModelSerializer
 
+@extend_schema(tags=["Orders"])
 
-@extend_schema(tags=["Order History"])
 class OrderHistoryListCreateAPIView(ListCreateAPIView):
     queryset = OrderHistory.objects.select_related('user', 'order')
     serializer_class = OrderHistorySerializer
