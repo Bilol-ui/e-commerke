@@ -1,20 +1,17 @@
 from decimal import Decimal
-from django.utils.translation import gettext_lazy as _
 
 from django.core.validators import MinValueValidator
-from django.db.models import OneToOneField, CASCADE, ForeignKey, PROTECT, ManyToManyField, CharField, \
-    TextChoices, SET_NULL
+from django.db.models import CASCADE, ForeignKey, PROTECT, CharField, TextChoices, SET_NULL
 from django.db.models.fields import PositiveIntegerField, TextField, IntegerField, BigIntegerField
+from django.utils.translation import gettext_lazy as _
 from rest_framework.fields import DecimalField
 
 from apps.models.base import CreatedBaseModel
-from root.settings import AUTH_USER_MODEL
-
-User = AUTH_USER_MODEL
 
 
 class Cart(CreatedBaseModel):
     customer = ForeignKey('apps.User', CASCADE, related_name='cart')
+
     # total = DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
     # @property
     # def total(self):
@@ -27,8 +24,8 @@ class Cart(CreatedBaseModel):
 class CartItem(CreatedBaseModel):
     cart = ForeignKey('apps.Cart', CASCADE, related_name='items')
     product_version = ForeignKey('apps.ProductVariant', CASCADE)
-    quantity = IntegerField(_('Quantity'),default=1)
-    price = BigIntegerField(_('Price at addition'),default=0)
+    quantity = IntegerField(_('Quantity'), default=1)
+    price = BigIntegerField(_('Price at addition'), default=0)
 
     @property
     def total(self):
@@ -39,8 +36,8 @@ class CartItem(CreatedBaseModel):
 
 
 class Wishlist(CreatedBaseModel):
-    user = OneToOneField('apps.User', CASCADE, related_name='wishlist')
-    products = ManyToManyField('apps.Product', related_name='wishlists', blank=True)
+    user = ForeignKey('apps.User', CASCADE, related_name='wishlists')
+    product = ForeignKey('apps.Product', CASCADE, related_name='wishlists')
 
     def __str__(self):
         return f"Wishlist({self.user})"
@@ -53,7 +50,7 @@ class Order(CreatedBaseModel):
         DELIVERED = 'delivered', 'Delivered'
         CANCELLED = 'cancelled', 'Cancelled'
 
-    user = ForeignKey('apps.User', on_delete=CASCADE, related_name='orders')
+    user = ForeignKey('apps.User', CASCADE, related_name='orders')
     total = DecimalField(max_digits=12, decimal_places=2, default=Decimal('0.00'))
     status = CharField(max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
 
