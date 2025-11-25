@@ -23,7 +23,6 @@ class Cart(CreatedBaseModel):
 
 class CartItem(CreatedBaseModel):
     cart = ForeignKey('apps.Cart', CASCADE, related_name='items')
-    product_version = ForeignKey('apps.ProductVariant', CASCADE)
     quantity = IntegerField(_('Quantity'), default=1)
     price = BigIntegerField(_('Price at addition'), default=0)
 
@@ -32,7 +31,7 @@ class CartItem(CreatedBaseModel):
         return self.quantity * self.price
 
     def __str__(self):
-        return f"{self.product_version.product.name}({self.quantity}x)"
+        return f"{self.product.name}({self.quantity}x)"
 
 
 class Wishlist(CreatedBaseModel):

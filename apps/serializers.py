@@ -1,15 +1,15 @@
 import re
 
-from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
+from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import CharField, IntegerField
+from rest_framework.relations import SlugRelatedField
+from rest_framework.serializers import ModelSerializer
 
 from apps.models import Product, ProductImage
 from apps.models.banners import Banner
 from apps.models.carts import CartItem, Cart, Wishlist, OrderItem, Order, OrderHistory
 from apps.models.products import Category
-from django.contrib.auth import get_user_model
-from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, IntegerField
-from rest_framework.serializers import ModelSerializer
 
 User = get_user_model()
 
@@ -76,7 +76,7 @@ class BannerModelSerializer(ModelSerializer):
 class CartItemModelSerializer(ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['id', 'cart', 'product_version', 'quantity', ]
+        fields = ['id', 'cart', 'quantity']
         read_only_fields = 'cart', 'quantity'
 
     def create(self, validate_data):
