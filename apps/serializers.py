@@ -5,7 +5,7 @@ from rest_framework.relations import PrimaryKeyRelatedField, SlugRelatedField
 from apps.models import Product, ProductImage
 from apps.models.banners import Banner
 from apps.models.carts import CartItem, Cart, Wishlist, OrderItem, Order, OrderHistory
-from apps.models.products import Category, ProductVariant
+from apps.models.products import Category
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, IntegerField
@@ -67,69 +67,51 @@ class ProductModelSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class ProductVariantModelSerializer(ModelSerializer):
-    # product nomini o‘qish uchun (faqat ko‘rinish, o‘zgartirib bo‘lmaydi)
-    product_name = CharField(source='product.name', read_only=True)
-
-    class Meta:
-        model = ProductVariant
-        fields = [
-            "id",
-            "product",
-            "product_name",
-            "color",
-            "size",
-            "ram",
-            "storage",
-            "diagonal",
-            "material",
-            "price",
-            "stock",
-            "is_available",
-        ]
-        read_only_fields = ["is_available"]
-
-
 class BannerModelSerializer(ModelSerializer):
     class Meta:
         model = Banner
         fields = ['id', 'title', 'image', 'is_active', 'created_at', 'updated_at']
 
+
 class CartItemModelSerializer(ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['id', 'cart','product_version',  'quantity', ]
-        read_only_fields = 'cart','quantity'
+        fields = ['id', 'cart', 'product_version', 'quantity', ]
+        read_only_fields = 'cart', 'quantity'
 
-    def create(self,validate_data):
+    def create(self, validate_data):
         user = self.context['request'].user
         cart = Cart.objects.filter(user=user).first()
         if not cart:
             cart = Cart.objects.create(user=user)
 
-        return super().create(validate_data | {'cart_id':cart.id})
+        return super().create(validate_data | {'cart_id': cart.id})
+
 
 class CartModelSerializer(ModelSerializer):
     class Meta:
         model = Cart
         fields = '__all__'
 
+
 class WishListModelSerializer(ModelSerializer):
-    product_names = SlugRelatedField(many=True,read_only=True,slug_field='name',source='products')
+    product_names = SlugRelatedField(many=True, read_only=True, slug_field='name', source='products')
 
     class Meta:
         model = Wishlist
         fields = ['id', 'user', 'product_names']
 
+
 class OrderItemModelSerializer(ModelSerializer):
-    product_name = CharField(source='product.name',read_only=True)
+    product_name = CharField(source='product.name', read_only=True)
 
     class Meta:
         model = OrderItem
         fields = ['id', 'product', 'product_name', 'quantity', 'price']
 
+
 class OrderModelSerializer(ModelSerializer):
-    items = OrderItemModelSerializer(many=True,read_only=True)
+    items = OrderItemModelSerializer(many=True, read_only=True)
     item_count = IntegerField(read_only=True)
 
     class Meta:
@@ -143,4 +125,3 @@ class OrderHistorySerializer(ModelSerializer):
     class Meta:
         model = OrderHistory
         fields = ['id', 'order', 'user', 'user_name', 'action', 'description', 'created_at']
-

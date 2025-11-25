@@ -63,28 +63,6 @@ class ProductImage(CreatedBaseModel):
         return f"Image for {self.product.name}"
 
 
-class ProductVariant(CreatedBaseModel):
-    product = ForeignKey('apps.Product', CASCADE, related_name='variants')
-    color = CharField(max_length=50, blank=True, null=True)  # Rang
-    size = CharField(max_length=50, blank=True, null=True)  # O‘lcham (S, M, L yoki 50 litr)
-    ram = CharField(max_length=50, blank=True, null=True)  # Telefonlar uchun
-    storage = CharField(max_length=50, blank=True, null=True)  # 128GB, 1TB
-    diagonal = CharField(max_length=50, blank=True, null=True)  # TV uchun
-    material = CharField(max_length=100, blank=True, null=True)
-    price = DecimalField(max_digits=10, decimal_places=2)
-    stock = PositiveIntegerField(default=0)
-    is_available = BooleanField(default=True)
-
-    def save(self, *args, **kwargs):
-        self.is_available = self.stock > 0
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        attrs = [self.size, self.color, self.ram, self.storage, self.diagonal]
-        attr_str = " ".join(filter(None, attrs))
-        return f"{self.product.name} ({attr_str.strip() or 'Variant'})"
-
-
 class ProductImages(CreatedBaseModel):
     product = ForeignKey('apps.Product', CASCADE, related_name="product_images")
     image = ImageField(upload_to='products/')

@@ -1,18 +1,17 @@
-from importlib.resources._common import _
 
 from rest_framework.exceptions import NotAuthenticated
+from apps.permissions import RoleBasedPermission
 
-from apps.models import Category, Product, ProductImages, ProductVariant
+from apps.models import Category, Product, ProductImages
 from apps.models.banners import Banner
 from apps.models.carts import Cart, CartItem, Wishlist, Order, OrderHistory
 from apps.paginations import Pagination
-from apps.permissions import RoleBasedPermission
+
 from apps.serializers import (
     BannerModelSerializer,
     CategoryModelSerializer,
     ProductImageModelSerializer,
     ProductModelSerializer,
-    ProductVariantModelSerializer,
     RegisterSerializer, CartModelSerializer, CartItemModelSerializer, WishListModelSerializer, OrderModelSerializer,
     OrderHistorySerializer,
 )
@@ -23,7 +22,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse, extend_schema
 from rest_framework import filters, status
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -115,7 +114,6 @@ User = get_user_model()
     }
 )
 @extend_schema(tags=["auth"])
-
 class RegisterAPIView(CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -150,14 +148,14 @@ class RegisterAPIView(CreateAPIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@extend_schema(tags=["Category"])
 
+@extend_schema(tags=["Category"])
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryModelSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["name", "slug"]
-    permission_classes = [IsAuthenticated, AllowAny]
+    permission_classes = [RoleBasedPermission]
     pagination_class = Pagination
     authentication_classes = []
 
@@ -168,42 +166,25 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 #     lookup_field = "slug"
 
 @extend_schema(tags=["product"])
-
 class ProductListCreateAPIView(ListCreateAPIView):
     queryset = Product.objects.all().select_related("category")
     serializer_class = ProductModelSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["name", "description"]
     ordering_fields = ["price", "name"]
-    permission_classes = [IsAuthenticated, RoleBasedPermission]
+    permission_classes = [RoleBasedPermission]
     pagination_class = Pagination
     authentication_classes = []
 
-@extend_schema(tags=["product"])
 
+@extend_schema(tags=["product"])
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.select_related("category")
     serializer_class = ProductModelSerializer
     lookup_field = "slug"
+    permission_classes = [RoleBasedPermission]
 
 @extend_schema(tags=["product"])
-
-class ProductVariantListCreateAPIView(ListCreateAPIView):
-    queryset = ProductVariant.objects.select_related("product")
-    serializer_class = ProductVariantModelSerializer
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ["product__slug", "color", "size", "ram", "storage", "is_available"]
-    search_fields = ["product__name"]
-    pagination_class = Pagination
-
-@extend_schema(tags=["product"])
-
-class ProductVariantDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = ProductVariant.objects.select_related("product")
-    serializer_class = ProductVariantModelSerializer
-
-@extend_schema(tags=["product"])
-
 class ProductImagesListCreateAPIView(ListCreateAPIView):
     queryset = ProductImages.objects.select_related("product")
     serializer_class = ProductImageModelSerializer
@@ -212,18 +193,18 @@ class ProductImagesListCreateAPIView(ListCreateAPIView):
     search_fields = ["product__name"]
     pagination_class = Pagination
 
-@extend_schema(tags=["product"])
 
+@extend_schema(tags=["product"])
 class ProductImagesDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.select_related("product")
     serializer_class = ProductImageModelSerializer
 
-@extend_schema(tags=["banners"])
 
+@extend_schema(tags=["banners"])
 class BannerListCreateAPIView(ListCreateAPIView):
-    queryset = Banner.objects.all()
+    queryset = Banner.objects.all().order_by('-id')
     serializer_class = BannerModelSerializer
-    permission_classes = [IsAuthenticated, AllowAny]  # barcha foydalanuvchilar ko'ra oladi
+    permission_classes = [RoleBasedPermission]
     pagination_class = Pagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
@@ -236,8 +217,8 @@ class CartListCreateAPIView(ListCreateAPIView):
     serializer_class = CartModelSerializer
     permission_classes = [IsAuthenticated]
 
-@extend_schema(tags=["Cart"])
 
+@extend_schema(tags=["Cart"])
 class CartItemListCreateAPIView(ListCreateAPIView):
     queryset = CartItem.objects.select_related('cart', 'product')
     serializer_class = CartItemModelSerializer
@@ -253,15 +234,17 @@ class WishlistCreateAPIView(ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         if user.is_anonymous:
-            raise NotAuthenticated(_("You are not authenticated"))
+            raise NotAuthenticated(("You are not authenticated"))
         return Wishlist.objects.filter(user=user)
+
+
 @extend_schema(tags=["Orders"])
 class OrderListCreateViewSet(ListCreateAPIView):
     queryset = Order.objects.prefetch_related('items__product')
     serializer_class = OrderModelSerializer
 
-@extend_schema(tags=["Orders"])
 
+@extend_schema(tags=["Orders"])
 class OrderHistoryListCreateAPIView(ListCreateAPIView):
     queryset = OrderHistory.objects.select_related('user', 'order')
     serializer_class = OrderHistorySerializer

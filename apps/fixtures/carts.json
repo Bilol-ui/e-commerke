@@ -1,6 +1,6 @@
 [
   {
-    "model": "apps.carts.cart",
+    "model": "apps.cart",
     "pk": 1,
     "fields": {
       "customer": 1,
@@ -9,7 +9,7 @@
   },
 
   {
-    "model": "apps.carts.cartitem",
+    "model": "apps.cart_item",
     "pk": 1,
     "fields": {
       "cart": 1,
@@ -20,7 +20,7 @@
     }
   },
   {
-    "model": "apps.carts.cartitem",
+    "model": "apps.cart_item",
     "pk": 2,
     "fields": {
       "cart": 1,
@@ -33,7 +33,7 @@
 
 
   {
-    "model": "apps.carts.wishlist",
+    "model": "apps.wishlist",
     "pk": 1,
     "fields": {
       "user": 1,
@@ -44,7 +44,7 @@
 
 
   {
-    "model": "apps.carts.order",
+    "model": "apps.order",
     "pk": 1,
     "fields": {
       "user": 1,
@@ -55,7 +55,7 @@
   },
 
   {
-    "model": "apps.carts.orderitem",
+    "model": "apps.order_item",
     "pk": 1,
     "fields": {
       "order": 1,
@@ -66,7 +66,7 @@
     }
   },
   {
-    "model": "apps.carts.orderitem",
+    "model": "apps.order_item",
     "pk": 2,
     "fields": {
       "order": 1,
@@ -79,7 +79,7 @@
 
 
   {
-    "model": "apps.carts.orderhistory",
+    "model": "apps.order_history",
     "pk": 1,
     "fields": {
       "order": 1,
@@ -90,7 +90,7 @@
     }
   },
   {
-    "model": "apps.carts.orderhistory",
+    "model": "apps.order_history",
     "pk": 2,
     "fields": {
       "order": 1,
@@ -101,7 +101,7 @@
     }
   },
   {
-    "model": "apps.carts.orderhistory",
+    "model": "apps.order_history",
     "pk": 3,
     "fields": {
       "order": 1,

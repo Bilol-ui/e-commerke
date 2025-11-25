@@ -1,4 +1,4 @@
-from apps.models import Category, Product, ProductImage, ProductVariant, User
+from apps.models import Category, Product, ProductImage, User
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -56,21 +56,6 @@ class ProductImageInline(TabularInline):
     readonly_fields = ()
 
 
-class ProductVariantInline(TabularInline):
-    model = ProductVariant
-    extra = 1
-    fields = (
-        "color",
-        "size",
-        "ram",
-        "storage",
-        "diagonal",
-        "material",
-        "price",
-        "stock",
-        "is_available",
-    )
-    readonly_fields = ("is_available",)
 
 
 @admin.register(Product)
@@ -80,7 +65,7 @@ class ProductAdmin(ModelAdmin):
     list_filter = ("category",)
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("-id",)
-    inlines = [ProductImageInline, ProductVariantInline]
+    inlines = [ProductImageInline]
     list_display_links = ("id", "name")
     save_on_top = True
 
@@ -93,9 +78,4 @@ class ProductImageAdmin(ModelAdmin):
     ordering = ("-id",)
 
 
-@admin.register(ProductVariant)
-class ProductVariantAdmin(ModelAdmin):
-    list_display = ("id", "product", "color", "size", "ram", "storage", "price", "stock", "is_available")
-    list_filter = ("is_available", "color", "size")
-    search_fields = ("product__name", "color", "size", "ram", "storage")
-    ordering = ("-id",)
+
